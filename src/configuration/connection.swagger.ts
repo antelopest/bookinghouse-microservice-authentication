@@ -1,6 +1,6 @@
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-export function connectSwagger(app) {
+export function connectSwagger(app):void {
   const swaggerSettings = new DocumentBuilder()
     .setTitle('Service Authentication')
     .setDescription('Authentication service for Booking house. Token JWT. Strategy Google, Facebook, Local.')
@@ -11,5 +11,4 @@ export function connectSwagger(app) {
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerSettings);
   SwaggerModule.setup('api/docs', app, swaggerDocument);
-
 }
