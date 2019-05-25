@@ -7,7 +7,7 @@ export function connectSwagger(app):void {
     .setVersion('1.0.0')
     .addTag('auth')
     .setSchemes('http', 'https')
-    .build()
+    .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerSettings);
   SwaggerModule.setup('api/docs', app, swaggerDocument);
