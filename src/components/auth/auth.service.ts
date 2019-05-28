@@ -62,12 +62,4 @@ export class AuthService {
       ? Promise.resolve(foundUser) : Promise.reject(new UnauthorizedException('Password invalid'));
     }
   }
-
-  async getHashPassword(password: string | undefined): Promise<string> {
-    return bcrypt.hash(password, 10);
-  }
-
-  async compareHash(password: string | undefined, hash: string | undefined): Promise<boolean> {
-    return bcrypt.compare(password, hash);
-  }
 }
