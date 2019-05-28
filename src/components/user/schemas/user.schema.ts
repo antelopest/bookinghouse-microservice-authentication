@@ -70,25 +70,25 @@ export const UserSchema = new mongoose.Schema({
     dateOfBirth: {
       type: String,
     },
-    passportDetails: {
-      nationality: {
-        type: String,
-      },
-      series: {
-        type: String,
-      },
-      number: {
-        type: String,
-      },
-      whoIssued: {
-        type: String,
-      },
-      whenIssued: {
-        type: String,
-      },
-      codeSubdivision: {
-        type: String,
-      },
+  },
+  passportDetails: {
+    nationality: {
+      type: String,
+    },
+    series: {
+      type: String,
+    },
+    number: {
+      type: String,
+    },
+    whoIssued: {
+      type: String,
+    },
+    whenIssued: {
+      type: String,
+    },
+    codeSubdivision: {
+      type: String,
     },
   },
 });

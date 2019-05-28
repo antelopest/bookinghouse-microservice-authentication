@@ -1,6 +1,5 @@
 import {ApiModelProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsDate, IsString } from 'class-validator';
-import { read } from 'fs';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateLocalUserDto {
   @ApiModelProperty()

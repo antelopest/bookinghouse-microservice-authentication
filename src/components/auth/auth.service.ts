@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -12,24 +12,15 @@ import { IUser } from '../user/interfaces/user.interface';
 import { IStatus } from './interfaces/status.interface';
 
 import { CreateLocalUserDto } from './dto/create-local-user.dto';
-import { stat } from 'fs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly jwtService: JwtService,
     @InjectModel('User') private readonly userModel: Model<IUser>,
     ) {}
-
-  /*
-    {
-      "email": "webantelope@gmail.com",
-      "dateOfBirth": "11.03.1993",
-      "surname": "Беленко",
-      "name": "Семен",
-      "password": "mescalito"
-    }
-  */
 
   async createLocalUser(createLocalUserDto: CreateLocalUserDto): Promise<IStatus> {
     const foundUser = await this.userModel.findOne({ 'account.local.email': createLocalUserDto.email });
@@ -37,10 +28,9 @@ export class AuthService {
       const status: IStatus = { success: false, message: 'User exits' };
       return status;
     } else {
-      const hash = await bcrypt.hash(createLocalUserDto.password, 10);
       const newUser = new this.userModel();
       newUser.account.local.email = createLocalUserDto.email;
-      newUser.account.local.password = hash;
+      newUser.account.local.password = await this.getHashPassword(createLocalUserDto.password);
       newUser.profile.dateOfBirth = createLocalUserDto.dateOfBirth;
       newUser.profile.surname = createLocalUserDto.surname;
       newUser.profile.name = createLocalUserDto.name;
@@ -51,18 +41,14 @@ export class AuthService {
   }
 
   async createToken(user: IUser) {
-    const expiresIn = 3600;
+    const expiresIn = '7d';
     const payload: IJwtPayload = {
-      userId: '123', // user.id,
-      email: 'my@mail.ru', // user.account.local.email,
-      role: 'user', // user.role,
+      userId: user.id,
+      role: user.role,
     };
     const secret = 'mySecret';
-    const accessToken = jwt.sign(payload, secret, {expiresIn});
-    return {
-      expiresIn,
-      accessToken,
-    };
+    const token = jwt.sign(payload, secret, {expiresIn});
+    return token;
   }
 
   async validateUser(payload: IJwtPayload): Promise<any> {
@@ -75,5 +61,13 @@ export class AuthService {
       return await bcrypt.compare(password, foundUser.account.local.password)
       ? Promise.resolve(foundUser) : Promise.reject(new UnauthorizedException('Password invalid'));
     }
+  }
+
+  async getHashPassword(password: string | undefined): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  async compareHash(password: string | undefined, hash: string | undefined): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }

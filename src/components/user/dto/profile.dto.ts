@@ -1,49 +1,20 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty } from 'class-validator';
-
-export class PassportDetailsDto {
-  @ApiModelProperty()
-  readonly nationality: string;
-
-  @ApiModelProperty()
-  readonly series: string;
-
-  @ApiModelProperty()
-  readonly number: string;
-
-  @ApiModelProperty()
-  readonly whoIssued: string;
-
-  @ApiModelProperty()
-  readonly whenIssued: string;
-
-  @ApiModelProperty()
-  readonly codeSubdivision: string;
-}
+import { IsNotEmpty } from 'class-validator';
 
 export class ProfileDto {
-  @ApiModelProperty()
+  @ApiModelProperty({ description: 'Фамилия'})
   @IsNotEmpty()
   readonly surname: string;
 
-  @ApiModelProperty()
+  @ApiModelProperty({ description: 'Имя'})
   @IsNotEmpty()
   readonly name: string;
 
-  @ApiModelProperty()
+  @ApiModelProperty({ description: 'Отчество'})
   @IsNotEmpty()
   readonly patronymic: string;
 
-  @ApiModelProperty()
-  @IsDate()
-  readonly date: string;
-
-  @ApiModelProperty()
-  readonly passportDetails: PassportDetailsDto;
+  @ApiModelProperty({ description: 'Дата рождения'})
+  @IsNotEmpty()
+  readonly dateOfBirth: string;
 }
-
-export class UserDto {
-  @ApiModelProperty()
-  readonly profile: ProfileDto;
-}
-

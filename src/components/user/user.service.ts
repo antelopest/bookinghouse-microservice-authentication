@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUser } from './interfaces/user.interface';
+import { ProfileDto } from 'dist/components/user/dto/profile.dto';
+
+import * as _ from 'lodash';
+import { PassportDetailsDto } from 'dist/components/user/dto/passport-details.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<IUser>) { }
 
   // async createLocalUser() {
 
@@ -20,8 +24,53 @@ export class UserService {
   // }
 
   async readUsers() {
-    const users = this.userModel.find({});
-    return users;
+    return await this.userModel.find({});
+  }
+
+  async readUserByEmail(email: string) {
+    return await this.userModel.findOne({ 'account.local.email': email });
+  }
+
+  async readCountAllUsers() {
+    return await this.userModel.countDocuments({});
+  }
+
+  async readUserById(id: string) {
+    return await this.userModel.findById(id);
+  }
+
+  async readUserProfile(id: string) {
+    const foundUser = await this.userModel.findById(id);
+    return foundUser.profile;
+  }
+
+  async readUserPassportDetails(id: string) {
+    const foundUser = await this.userModel.findById(id);
+    return foundUser.passportDetails;
+  }
+
+  async putUserPassportDetails(id: string, passportDetailsDto: PassportDetailsDto) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, { $set: {
+      'passportDetails.nationality': passportDetailsDto.nationality,
+      'passportDetails.series': passportDetailsDto.series,
+      'passportDetails.number': passportDetailsDto.number,
+      'passportDetails.whoIssued': passportDetailsDto.whoIssued,
+      'passportDetails.whenIssued': passportDetailsDto.whenIssued,
+      'passportDetails.codeSubdivision': passportDetailsDto.codeSubdivision,
+      'dateUpdated': new Date(),
+    }});
+    return updatedUser.passportDetails;
+  }
+
+  async putUserProfile(id: string, profileDto: ProfileDto) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, { $set: {
+      'profile.surname': profileDto.surname,
+      'profile.name': profileDto.name,
+      'profile.patronymic': profileDto.patronymic,
+      'profile.dateOfBirth': profileDto.dateOfBirth,
+      'dateUpdated': new Date(),
+    }});
+    return updatedUser.profile;
   }
 
   // async readUser() {
@@ -40,19 +89,24 @@ export class UserService {
 
   // }
 
-  // async updateProfile() {
-
-  // }
+  async updateProfile(id: string, profileDto: ProfileDto) {
+    return await this.userModel.findByIdAndUpdate(id, {
+      surname: profileDto.surname,
+      name: profileDto.name,
+      patronymic: profileDto.patronymic,
+      dateOfBirth: profileDto.dateOfBirth,
+    });
+  }
 
   // async updatePassportDetails() {
 
   // }
 
-  // async deleteUsers() {
+  async deleteUsers() {
+    return await this.userModel.deleteMany({});
+  }
 
-  // }
-
-  // async deleteUserId() {
-
-  // }
+  async deleteUserId(id: string) {
+    return await this.userModel.findByIdAndDelete(id);
+  }
 }

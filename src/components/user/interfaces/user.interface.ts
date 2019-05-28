@@ -13,15 +13,15 @@ export interface IUser extends Document {
     name: string;
     patronymic: string;
     dateOfBirth: string;
-    passportDetails: {
-      nationality: string,
-      series: string,
-      number: string,
-      whoIssued: string,
-      whenIssued: string,
-      codeSubdivision: string,
-    }
   };
+  readonly passportDetails: {
+    nationality: string,
+    series: string,
+    number: string,
+    whoIssued: string,
+    whenIssued: string,
+    codeSubdivision: string,
+  }
   readonly role: string;
   readonly verified: boolean;
   readonly createdDate: string;
