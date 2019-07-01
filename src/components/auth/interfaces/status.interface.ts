@@ -1,4 +1,5 @@
 export interface IStatus {
-  success: boolean;
-  message: string;
+  done: boolean;
+  message?: string;
+  token?: string;
 }

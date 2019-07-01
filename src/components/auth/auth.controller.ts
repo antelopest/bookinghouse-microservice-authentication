@@ -6,6 +6,7 @@ import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { LoginLocalUserDto } from './dto/login-local-user.dto';
 import { UserService } from '../user/user.service';
 import { BcryptService } from './bcrypt.service';
+import { IStatus } from './interfaces/status.interface';
 
 @ApiUseTags('Аутентификация')
 @Controller('authentication')
@@ -24,8 +25,8 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
-  async LoginGoogleUser() {
-    return '123';
+  async LoginGoogleUser(@Res() res: any) {
+    res.json({ message: 'Сторонняя аутентификация через Google OAuth 2.0' });
   }
 
   @Post('/facebook/login')
@@ -36,8 +37,8 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
-  async LoginFacebookUser() {
-    return '123';
+  async LoginFacebookUser(@Res() res: any) {
+    res.json({ message: 'Сторонняя аутентификация через Facebook OAuth 2.0' });
   }
 
   @Post('/vk/login')
@@ -48,8 +49,8 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
-  async LoginVkUser() {
-    return '123';
+  async LoginVkUser(@Res() res: any) {
+    res.json({ message: 'Сторонняя аутентификация через Vk OAuth 2.0' });
   }
 
   @Post('/local/login')
@@ -62,17 +63,22 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   async LoginLocalUser(
     @Res() res: any,
-    @Query() loginLocalUserDto: LoginLocalUserDto,
+    @Body() loginLocalUserDto: LoginLocalUserDto,
   ) {
     const foundUser = await this.userService.readUserByEmail(loginLocalUserDto.email);
     if (foundUser) {
       const comparePassword = await this.bcryptService.compareHash(loginLocalUserDto.password, foundUser.account.local.password);
       if (comparePassword) {
-        const accessToken = await this.authService.createToken(foundUser);
         res.json({
-          token: accessToken,
+          done: true,
+          token: await this.authService.createToken(foundUser),
         });
-      } else { return 'password invalid'; }
+      } else {
+        res.json({
+          done: false,
+          message: 'Password invalid',
+        });
+      }
     }
   }
 
@@ -86,13 +92,16 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   async RegisterLocalUser(
     @Res() res: any,
-    @Query() createLocalUserDto: CreateLocalUserDto,
+    @Body() createLocalUserDto: CreateLocalUserDto,
   ) {
-    const status = await this.authService.createLocalUser(createLocalUserDto);
-    (status.success) ? res.status(HttpStatus.CREATED).json({
-      status,
+    const status: IStatus = await this.authService.createLocalUser(createLocalUserDto);
+    (status.done) ? res.status(HttpStatus.CREATED).json({
+      done: status.done,
+      token: status.token,
+      message: status.message,
     }) : res.status(HttpStatus.BAD_REQUEST).json({
-      status,
+      done: status.done,
+      message: status.message,
     });
   }
 
@@ -104,8 +113,10 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
-  async ChangeLocalUserEmail() {
-    return '123';
+  async ChangeLocalUserEmail(@Res() res: any) {
+    res.json({
+      message: 'Изменения пароля учетной записи',
+    });
   }
 
   @Put('/:user_id/attributes/email')
@@ -116,7 +127,9 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.OK })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
-  async ChangeLocalUserPassword() {
-    return '123';
+  async ChangeLocalUserPassword(@Res() res: any) {
+    res.json({
+      message: 'Изменения электронной почты локальной учетной записи',
+    });
   }
 }

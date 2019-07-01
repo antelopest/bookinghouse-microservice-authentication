@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -13,34 +13,41 @@ import { IStatus } from './interfaces/status.interface';
 
 import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { BcryptService } from './bcrypt.service';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly bcryptService: BcryptService,
     @InjectModel('User') private readonly userModel: Model<IUser>,
     ) {}
 
   async createLocalUser(createLocalUserDto: CreateLocalUserDto): Promise<IStatus> {
     const foundUser = await this.userModel.findOne({ 'account.local.email': createLocalUserDto.email });
     if (foundUser) {
-      const status: IStatus = { success: false, message: 'User exits' };
-      return status;
+      return { done: false, message: 'User exists' };
     } else {
       const newUser = new this.userModel();
       newUser.account.local.email = createLocalUserDto.email;
-      newUser.account.local.password = await this.getHashPassword(createLocalUserDto.password);
+      newUser.account.local.password = await this.bcryptService.getHashPassword(createLocalUserDto.password);
       newUser.profile.dateOfBirth = createLocalUserDto.dateOfBirth;
       newUser.profile.surname = createLocalUserDto.surname;
       newUser.profile.name = createLocalUserDto.name;
-      await newUser.save();
-      const status: IStatus = { success: true, message: 'User created' };
-      return status;
+      if (await newUser.save()) {
+        return {
+          done: true,
+          message: 'User created',
+          token: await this.createToken(newUser),
+        }
+      } else {
+      }
     }
   }
 
-  async createToken(user: IUser) {
+  async createToken(user: IUser): Promise<any> {
     const expiresIn = '7d';
     const payload: IJwtPayload = {
       userId: user.id,

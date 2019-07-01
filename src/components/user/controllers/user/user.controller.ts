@@ -2,11 +2,14 @@ import {
   Controller,
   Put,
   Body,
-  UsePipes, ValidationPipe, Get, Res, HttpStatus, UseGuards, Req, Logger, Param, Delete, Headers, HttpCode, Query } from '@nestjs/common';
+  UsePipes,
+  ValidationPipe,
+  Get,
+  Res,
+  HttpStatus,
+  UseGuards, Req, Logger, Param, Delete, Headers, HttpCode, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags, ApiBearerAuth, ApiImplicitQuery, ApiImplicitBody } from '@nestjs/swagger';
-
 import { UserService } from '../../user.service';
-
 import { ProfileDto } from '../../dto/profile.dto';
 import { PassportDetailsDto } from '../../dto/passport-details.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -47,18 +50,18 @@ export class UserController {
     title: 'Изменить паспортные данные пользователя',
     description: 'Изменить паспортные данные пользователя',
   })
-  async putUserPassportDetails(@Req() req: any, @Res() res: any, @Query() passportDetailsDto: PassportDetailsDto) {
-    res.json({ passportDetails: await this.userService.putUserPassportDetails(req.user._id, passportDetailsDto)});
+  async putUserPassportDetails(@Req() req: any, @Res() res: any, @Body() passportDetailsDto: PassportDetailsDto) {
+    res.json({ passportDetails: await this.userService.updateUserPassportDetails(req.user._id, passportDetailsDto)});
   }
 
   @Put('/attributes/profile')
   @HttpCode(200)
   @ApiOperation({
-    title: 'Изменить паспортные данные пользователя',
+    title: 'Изменить данные профиля пользователя',
     description: 'Изменить паспортные данные пользователя',
   })
-  async putUserProfile(@Req() req: any, @Res() res: any, @Query() profileDto: ProfileDto) {
+  async putUserProfile(@Req() req: any, @Res() res: any, @Body() profileDto: ProfileDto) {
     Logger.log(profileDto);
-    res.json({ passportDetails: await this.userService.putUserProfile(req.user._id, profileDto)});
+    res.json({ profile: await this.userService.updateUserProfile(req.user._id, profileDto)});
   }
 }

@@ -49,7 +49,7 @@ export class UserService {
     return foundUser.passportDetails;
   }
 
-  async putUserPassportDetails(id: string, passportDetailsDto: PassportDetailsDto) {
+  async updateUserPassportDetails(id: string, passportDetailsDto: PassportDetailsDto) {
     const updatedUser = await this.userModel.findByIdAndUpdate(id, { $set: {
       'passportDetails.nationality': passportDetailsDto.nationality,
       'passportDetails.series': passportDetailsDto.series,
@@ -58,18 +58,18 @@ export class UserService {
       'passportDetails.whenIssued': passportDetailsDto.whenIssued,
       'passportDetails.codeSubdivision': passportDetailsDto.codeSubdivision,
       'dateUpdated': new Date(),
-    }});
+    }}, { new: true });
     return updatedUser.passportDetails;
   }
 
-  async putUserProfile(id: string, profileDto: ProfileDto) {
+  async updateUserProfile(id: string, profileDto: ProfileDto) {
     const updatedUser = await this.userModel.findByIdAndUpdate(id, { $set: {
       'profile.surname': profileDto.surname,
       'profile.name': profileDto.name,
       'profile.patronymic': profileDto.patronymic,
       'profile.dateOfBirth': profileDto.dateOfBirth,
       'dateUpdated': new Date(),
-    }});
+    }}, { new: true });
     return updatedUser.profile;
   }
 
@@ -88,15 +88,6 @@ export class UserService {
   // async updatePassword() {
 
   // }
-
-  async updateProfile(id: string, profileDto: ProfileDto) {
-    return await this.userModel.findByIdAndUpdate(id, {
-      surname: profileDto.surname,
-      name: profileDto.name,
-      patronymic: profileDto.patronymic,
-      dateOfBirth: profileDto.dateOfBirth,
-    });
-  }
 
   // async updatePassportDetails() {
 
