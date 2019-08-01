@@ -15,6 +15,14 @@ import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from './bcrypt.service';
 
+export enum Provider {
+  GOOGLE = 'google',
+  /*
+  FACEBOOK = 'facebook',
+  VKONTAKTE = 'vkontakte',
+  LOCAL = 'local',
+  */
+}
 
 @Injectable()
 export class AuthService {
