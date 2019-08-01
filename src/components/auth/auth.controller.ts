@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Res, HttpStatus, Put, Logger, HttpCode, Param, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res, HttpStatus, Put, Logger, HttpCode, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
@@ -7,6 +7,7 @@ import { LoginLocalUserDto } from './dto/login-local-user.dto';
 import { UserService } from '../user/user.service';
 import { BcryptService } from './bcrypt.service';
 import { IStatus } from './interfaces/status.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('Аутентификация')
 @Controller('authentication')
@@ -17,7 +18,8 @@ export class AuthController {
     private bcryptService: BcryptService,
     ) {}
 
-  @Post('/google/login')
+  @Get('/google/login')
+  @UseGuards(AuthGuard('google'))
   @HttpCode(200)
   @ApiOperation({
     title: 'Сторонняя аутентификация через Google OAuth 2.0',
@@ -27,6 +29,25 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   async LoginGoogleUser(@Res() res: any) {
     res.json({ message: 'Сторонняя аутентификация через Google OAuth 2.0' });
+  }
+
+  @Get('/google/callback')
+  @UseGuards(AuthGuard('google'))
+  @HttpCode(200)
+  @ApiOperation({
+    title: 'Сторонняя аутентификация через Google OAuth 2.0',
+    description: 'Сторонняя аутентификация через Google OAuth 2.0',
+  })
+  @ApiResponse({ status: HttpStatus.OK })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  async LoginGoogleCallback(@Req() req, @Res() res) {
+    const jwt: string = req.user.jwt;
+
+    if (jwt) {
+      res.redirect('http://localhost:3000/login/succes/' + jwt);
+    } else {
+      res.redirect('http://localhost:4200/login/failure');
+    }
   }
 
   @Post('/facebook/login')
