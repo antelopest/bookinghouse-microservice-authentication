@@ -2,7 +2,7 @@
 /dist
 /node_modules
 
-/src/.env
+/src/.env*
 # Logs
 logs
 *.log
