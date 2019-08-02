@@ -4,7 +4,7 @@ import { ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { LoginLocalUserDto } from './dto/login-local-user.dto';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../components/user/user.service';
 import { BcryptService } from './bcrypt.service';
 import { IStatus } from './interfaces/status.interface';
 import { AuthGuard } from '@nestjs/passport';

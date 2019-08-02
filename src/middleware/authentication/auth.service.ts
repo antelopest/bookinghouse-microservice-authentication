@@ -5,12 +5,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
-import { UserService } from '../user/user.service';
-
+import { UserService } from '../../components/user/user.service';
 import { IJwtPayload } from './interfaces/payload.interface';
-import { IUser } from '../user/interfaces/user.interface';
+import { IUser } from '../../components/user/interfaces/user.interface';
 import { IStatus } from './interfaces/status.interface';
-
 import { CreateLocalUserDto } from './dto/create-local-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from './bcrypt.service';
@@ -49,8 +47,8 @@ export class AuthService {
           done: true,
           message: 'User created',
           token: await this.createToken(newUser),
+        // tslint:disable-next-line:semicolon
         }
-      } else {
       }
     }
   }
