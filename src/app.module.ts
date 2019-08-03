@@ -11,13 +11,13 @@ import { AuthService } from './middleware/authentication/auth.service';
 import { BcryptService } from './middleware/authentication/bcrypt.service';
 import { AdminController } from './components/user/controllers/admin/admin.controller';
 import { ClientController } from './components/user/controllers/client/client.controller';
-import { configurationDatabase } from './configuration/connection.database';
+import { configurationDatabase, СonfigDataBase } from './shared/configuration/connection.database';
 
 const configurationDB = configurationDatabase();
 
 @Module({
   imports: [
-    MongooseModule.forRoot(configurationDB.DATABASE_URI, configurationDB.MONGOOSE_SETTINGS),
+    MongooseModule.forRoot('mongodb://antelope:antelope19@ds147946.mlab.com:47946/db_test', configurationDB.MONGOOSE_SETTINGS),
     AuthModule,
     UserModule,
   ],

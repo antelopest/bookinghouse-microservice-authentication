@@ -1,13 +1,16 @@
-interface СonfigDataBase {
-  DATABASE_URI?: string;
-  MONGOOSE_SETTINGS?: {
+import * as dotenv from 'dotenv';
+
+export interface СonfigDataBase {
+  DATABASE_URI: string;
+  MONGOOSE_SETTINGS: {
     useCreateIndex?: any,
     useNewUrlParser?: any,
     useFindAndModify?: any,
   };
 }
 
-export function configurationDatabase() {
+export async function configurationDatabase() {
+  await dotenv.config();
   const db: СonfigDataBase = {
     DATABASE_URI: process.env.DATABASE_URI,
     MONGOOSE_SETTINGS: {
@@ -16,5 +19,5 @@ export function configurationDatabase() {
       useFindAndModify: process.env.MONGOOSE_USEFINDANDMODIFY,
     },
   };
-  return db;
+  return await db;
 }
