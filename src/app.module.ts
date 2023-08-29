@@ -17,7 +17,7 @@ const configurationDB = configurationDatabase();
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://antelope:antelope19@ds147946.mlab.com:47946/db_test', configurationDB.MONGOOSE_SETTINGS),
+    MongooseModule.forRoot('mongodb_url', configurationDB.MONGOOSE_SETTINGS),
     AuthModule,
     UserModule,
   ],
